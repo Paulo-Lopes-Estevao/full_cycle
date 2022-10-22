@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+
+  nginx:
+    image: nginx:1.21-alpine
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    tty: true
+    restart: always
+    command: dockerize -wait tcp://node:5000 -timeout 20s /docker-entrypoint.sh nginx -g 'daemon off;'
+    ports:
+      - "8080:80"
+    networks:
+      - internal
+    depends_on:
+      - node
+
+  node:
+    image: node:17-alpine
+    container_name: node
+    tty: true
+    restart: always
+    command: dockerize -wait tcp://mariadb:3306 -timeout 20s docker-entrypoint.sh sh -c "npm install && node index.js --port 5000"
+    build: 
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./app:/var/www/html"
+    networks:
+      - internal
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb:10.7.3
+    restart: always
+    command: --innodb-use-native-aio=0
+    container_name: mariadb
+    tty: true
+    volumes:
+      - "./mariadb:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+    networks:
+      - internal
+    environment:
+      - MYSQL_DATABASE=testedb
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+
+networks:
+  internal:
+    driver: bridge
+
+
+
