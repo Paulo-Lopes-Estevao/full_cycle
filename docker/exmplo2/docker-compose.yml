@@ -25,12 +25,12 @@ services:
     restart: always
     command: dockerize -wait tcp://mariadb:3306 -timeout 20s docker-entrypoint.sh sh -c "npm install && node index.js --port 5000"
     build: 
-      context: ./app
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:
-      - "./app:/var/www/html"
+      - "./app:/usr/src/app/exemplo"
     networks:
       - internal
     depends_on:
