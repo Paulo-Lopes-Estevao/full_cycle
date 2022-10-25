@@ -1,4 +1,4 @@
-FROM node:17-alpine
+FROM node:14
 
 RUN apk add --no-cache openssl
 
@@ -7,8 +7,20 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-WORKDIR /var/www/html
+WORKDIR /usr/src/app/exemplo
 
-COPY ./project/* /var/www/html/
+RUN apk update && apk install -y wget
+
+RUN npm install
+
+COPY . /usr/src/app/exemplo/
+
+FROM nginx:1.16.0-alpine
+
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/conf.d
 
 EXPOSE 5000
+EXPOSE 80
+
+CMD ["nginx","-g", "daemon off;"]
