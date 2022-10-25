@@ -1,9 +1,7 @@
-FROM nginx:1.21-alpine
+FROM nginx:1.16.0-alpine
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d
-
-RUN mkdir /var/www/html -p && touch /var/www/html/index.js
+COPY nginx/nginx.conf /etc/nginx/conf.d
 
 RUN apk add --no-cache openssl
 
