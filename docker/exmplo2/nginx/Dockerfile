@@ -12,3 +12,5 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 EXPOSE 80
 
+
+CMD ["nginx","-g", "daemon off;"]
