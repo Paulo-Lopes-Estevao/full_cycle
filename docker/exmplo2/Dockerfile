@@ -1,11 +1,13 @@
-FROM node:14
+FROM node:16
 
-WORKDIR /usr/src/app/exemplo
+WORKDIR /usr/src/app
 
-RUN apk update && apk install -y wget
+COPY ["package.json", "yarn-lock*", "./"]
 
-RUN npm install
+RUN yarn install
 
-COPY . /usr/src/app/exemplo/
+COPY . .
 
 EXPOSE 5000
+
+CMD ["yarn", "start"]
